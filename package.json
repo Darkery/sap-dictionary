@@ -1,0 +1,96 @@
+{
+  "name": "sap-dictionary",
+  "displayName": "SAP Dictionary",
+  "description": "Instant SAP table and field descriptions in VS Code — no SAP connection needed",
+  "version": "0.1.0",
+  "publisher": "YOUR_PUBLISHER_ID",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "keywords": ["SAP", "ABAP", "HANA", "dictionary", "data dictionary"],
+  "icon": "resources/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_GITHUB/sap-dictionary"
+  },
+  "activationEvents": ["onStartupFinished"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sap-dictionary",
+          "title": "SAP Dictionary",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "sap-dictionary": [
+        {
+          "id": "sapDictionaryTree",
+          "name": "Tables & Fields",
+          "contextualTitle": "SAP Dictionary"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "sapDictionary.importData",
+        "title": "SAP Dictionary: Import System Data (JSON)"
+      },
+      {
+        "command": "sapDictionary.clearUserData",
+        "title": "SAP Dictionary: Clear Imported Data"
+      },
+      {
+        "command": "sapDictionary.openProduct",
+        "title": "SAP Dictionary: Open Product Page"
+      },
+      {
+        "command": "sapDictionary.search",
+        "title": "SAP Dictionary: Search Tables & Fields"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "sapDictionary.importData",
+          "when": "view == sapDictionaryTree",
+          "group": "navigation"
+        },
+        {
+          "command": "sapDictionary.search",
+          "when": "view == sapDictionaryTree",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "SAP Dictionary",
+      "properties": {
+        "sapDictionary.productUrl": {
+          "type": "string",
+          "default": "https://YOUR_LANDING_PAGE_URL",
+          "description": "Landing page URL for lead gen CTA"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "node esbuild.js --production",
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "fuse.js": "^7.0.0"
+  }
+}

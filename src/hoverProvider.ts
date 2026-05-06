@@ -2,14 +2,6 @@ import * as vscode from 'vscode';
 import { DataManager } from './dataManager';
 import { FieldInfo, TableInfo } from './types';
 
-const SUPPORTED_LANGUAGES = [
-  'abap',
-  'sql',
-  'hdbview',
-  'hdbcalculationview',
-  'hdbtable',
-  'hdbprocedure',
-];
 
 export function createHoverProvider(dataManager: DataManager, productUrl: string): vscode.HoverProvider {
   return {
@@ -131,15 +123,16 @@ export function registerHoverProvider(
   productUrl: string
 ): void {
   const provider = createHoverProvider(dataManager, productUrl);
-  for (const lang of SUPPORTED_LANGUAGES) {
-    context.subscriptions.push(
-      vscode.languages.registerHoverProvider({ language: lang }, provider)
-    );
-  }
-  // Also catch .hdb* files that VS Code may not have a language ID for
+  // Register by language ID for abap and sql (no file-extension collision)
+  context.subscriptions.push(
+    vscode.languages.registerHoverProvider({ language: 'abap' }, provider),
+    vscode.languages.registerHoverProvider({ language: 'sql' }, provider),
+  );
+  // Register by pattern for .hdb* files — avoids duplicate tooltips when a
+  // language extension is also installed that assigns a language ID to these.
   context.subscriptions.push(
     vscode.languages.registerHoverProvider(
-      { pattern: '**/*.{abap,hdbview,hdbtable,hdbprocedure,hdbcalculationview}' },
+      { pattern: '**/*.{hdbview,hdbtable,hdbprocedure,hdbcalculationview}' },
       provider
     )
   );

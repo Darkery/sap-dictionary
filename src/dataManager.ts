@@ -90,18 +90,20 @@ export class DataManager {
   }
 
   lookup(tableName: string, fieldName?: string): LookupResult | null {
-    const tableInfo = this.mergedTables[tableName.toUpperCase()];
+    const upperTable = tableName.toUpperCase();
+    const tableInfo = this.mergedTables[upperTable];
     if (!tableInfo) {
       return null;
     }
     if (!fieldName) {
-      return { tableName, tableInfo };
+      return { tableName: upperTable, tableInfo };
     }
-    const fieldInfo = tableInfo.fields[fieldName.toUpperCase()];
+    const upperField = fieldName.toUpperCase();
+    const fieldInfo = tableInfo.fields[upperField];
     if (!fieldInfo) {
-      return { tableName, tableInfo };
+      return { tableName: upperTable, tableInfo };
     }
-    return { tableName, tableInfo, fieldName: fieldName.toUpperCase(), fieldInfo };
+    return { tableName: upperTable, tableInfo, fieldName: upperField, fieldInfo };
   }
 
   search(query: string): SearchItem[] {
@@ -122,11 +124,17 @@ export class DataManager {
   async importUserData(filePath: string): Promise<{ tableCount: number; fieldCount: number }> {
     const raw = fs.readFileSync(filePath, 'utf-8');
     const parsed: SapDataFile = JSON.parse(raw);
-    if (!parsed.tables) {
-      throw new Error('Invalid file: missing "tables" key');
+    if (!parsed.tables || typeof parsed.tables !== 'object' || Array.isArray(parsed.tables)) {
+      throw new Error('Invalid file: "tables" must be an object');
+    }
+    // Validate before persisting so globalState never contains malformed data
+    const userData = parsed.tables;
+    for (const [tbl, info] of Object.entries(userData)) {
+      if (!info.fields || typeof info.fields !== 'object') {
+        throw new Error(`Invalid file: table "${tbl}" is missing a "fields" object`);
+      }
     }
     await this.context.globalState.update(USER_DATA_KEY, raw);
-    const userData = parsed.tables;
     this.mergedTables = this.merge(this.loadBundledData(), userData);
     this.buildSearchIndex();
     const fieldCount = Object.values(userData).reduce(

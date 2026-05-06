@@ -132,50 +132,52 @@ def fetch_view(session: requests.Session, view_name: str, loio: str):
     try:
         resp = session.get(BASE_URL, params=params, timeout=30)
         resp.raise_for_status()
+        data = resp.json()
+        body = data["data"]["body"]
+        soup = BeautifulSoup(body, "lxml")
+
+        # Description from <meta name="abstract">
+        meta = soup.find("meta", {"name": "abstract"})
+        description = meta.get("content", "").strip() if meta else ""
+
+        # Category
+        category = "HANA_MONITORING" if view_name.startswith("M_") else "HANA_SYSTEM"
+
+        # Parse column table
+        fields = {}
+        table = soup.find("table")
+        if table:
+            rows = table.find_all("tr")
+            for row in rows[1:]:   # skip header row
+                cells = row.find_all("td")
+                if len(cells) < 3:
+                    continue
+                col_name = cells[0].get_text(strip=True)
+                raw_type = cells[1].get_text(strip=True)
+                col_desc = cells[2].get_text(strip=True)
+
+                if not col_name:
+                    continue
+
+                field_info = {"description": col_desc}
+                field_info.update(parse_type(raw_type))
+                # Reorder: description first, then type, then length
+                ordered = {"description": field_info["description"], "type": field_info["type"]}
+                if "length" in field_info:
+                    ordered["length"] = field_info["length"]
+                fields[col_name] = ordered
+
+        return {
+            "description": description,
+            "category": category,
+            "fields": fields,
+        }
     except requests.RequestException as e:
-        print(f"  ERROR fetching {view_name}: {e}", file=sys.stderr)
+        print(f"  ERROR fetching {view_name}: network error — {e}", file=sys.stderr)
         return None
-
-    data = resp.json()
-    body = data["data"]["body"]
-    soup = BeautifulSoup(body, "lxml")
-
-    # Description from <meta name="abstract">
-    meta = soup.find("meta", {"name": "abstract"})
-    description = meta.get("content", "").strip() if meta else ""
-
-    # Category
-    category = "HANA_MONITORING" if view_name.startswith("M_") else "HANA_SYSTEM"
-
-    # Parse column table
-    fields = {}
-    table = soup.find("table")
-    if table:
-        rows = table.find_all("tr")
-        for row in rows[1:]:   # skip header row
-            cells = row.find_all("td")
-            if len(cells) < 3:
-                continue
-            col_name = cells[0].get_text(strip=True)
-            raw_type = cells[1].get_text(strip=True)
-            col_desc = cells[2].get_text(strip=True)
-
-            if not col_name:
-                continue
-
-            field_info = {"description": col_desc}
-            field_info.update(parse_type(raw_type))
-            # Reorder: description first, then type, then length
-            ordered = {"description": field_info["description"], "type": field_info["type"]}
-            if "length" in field_info:
-                ordered["length"] = field_info["length"]
-            fields[col_name] = ordered
-
-    return {
-        "description": description,
-        "category": category,
-        "fields": fields,
-    }
+    except (KeyError, ValueError) as e:
+        print(f"  ERROR parsing {view_name}: unexpected response — {e}", file=sys.stderr)
+        return None
 
 
 # ---------------------------------------------------------------------------

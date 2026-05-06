@@ -11,10 +11,6 @@ import json
 import sys
 import time
 import re
-import warnings
-
-# Suppress SSL warnings from older LibreSSL on macOS
-warnings.filterwarnings("ignore")
 
 try:
     import requests
@@ -162,29 +158,16 @@ def _find_fields_table(soup):
 
 
 def _extract_field_description(data_element_cell, fallback: str) -> str:
-    """
-    Extract field description from the Data Element cell.
-
-    The data element cell typically has a link whose title attribute
-    contains the human-readable description (the second link, not the first
-    which is just the data element name).
-    """
-    links = data_element_cell.find_all("a")
-    # The first link has title = data element name (same as text)
-    # The second link (if present) has title = short description
-    # Example: <a title="MATNR">MATNR</a>  <a title="Material Number">MATNR</a>
-    if len(links) >= 2:
-        title = links[1].get("title", "").strip()
-        if title:
+    # fallback is the Short Description column — most reliable source
+    if fallback:
+        return fallback
+    # Only dig into link titles if Short Description was genuinely empty
+    for link in data_element_cell.find_all("a"):
+        title = link.get("title", "").strip()
+        link_text = link.get_text(strip=True)
+        if title and title != link_text:
             return title
-    if len(links) == 1:
-        title = links[0].get("title", "").strip()
-        # If the title equals the link text, it's just the name — use fallback
-        if title and title != links[0].get_text(strip=True):
-            return title
-
-    # Fall back to Short Description column text
-    return fallback
+    return ""
 
 
 # ---------------------------------------------------------------------------
@@ -214,7 +197,7 @@ def fetch_table(session: requests.Session, table_name: str):
 # Reading table list
 # ---------------------------------------------------------------------------
 
-def read_table_names(path: str) -> list:
+def read_table_names(path) -> list:
     """Read table names from a file, skipping blank lines and comments."""
     names = []
     with open(path, encoding="utf-8") as f:
@@ -223,6 +206,7 @@ def read_table_names(path: str) -> list:
             if not line or line.startswith("#"):
                 continue
             names.append(line.upper())
+    names = list(dict.fromkeys(names))  # preserve order, remove duplicates
     return names
 
 
@@ -257,7 +241,13 @@ def main():
     if args.table:
         table_names = [args.table.upper()]
     else:
-        table_names = read_table_names(args.tables_file)
+        try:
+            from pathlib import Path
+            tables = read_table_names(Path(args.tables_file))
+        except FileNotFoundError:
+            print(f"[ERROR] Tables file not found: {args.tables_file}", file=sys.stderr)
+            sys.exit(1)
+        table_names = tables
 
     if not table_names:
         print("No tables to scrape.", file=sys.stderr)

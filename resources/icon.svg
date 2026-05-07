@@ -1,42 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <!-- Background -->
-  <rect width="128" height="128" rx="20" fill="#ffffff"/>
-  <rect width="128" height="128" rx="20" fill="none" stroke="#e2e8f0" stroke-width="2"/>
-
-  <!-- Table centered in canvas: x=33 y=30 w=62 h=54 -->
-  <rect x="33" y="30" width="62" height="54" rx="5" fill="none" stroke="#2563eb" stroke-width="2"/>
-
-  <!-- Header fill -->
-  <rect x="33" y="30" width="62" height="17" rx="5" fill="#2563eb"/>
-  <rect x="33" y="39" width="62" height="8" fill="#2563eb"/>
-
-  <!-- Column dividers -->
-  <line x1="59" y1="30" x2="59" y2="84" stroke="#2563eb" stroke-width="1.5" opacity="0.35"/>
-  <line x1="79" y1="30" x2="79" y2="84" stroke="#2563eb" stroke-width="1.5" opacity="0.35"/>
-
-  <!-- Header labels -->
-  <rect x="38" y="36" width="14" height="4" rx="2" fill="white" opacity="0.9"/>
-  <rect x="63" y="36" width="9"  height="4" rx="2" fill="white" opacity="0.6"/>
-  <rect x="83" y="36" width="7"  height="4" rx="2" fill="white" opacity="0.6"/>
-
-  <!-- Row 1 -->
-  <rect x="38" y="52" width="14" height="3.5" rx="1.75" fill="#2563eb" opacity="0.7"/>
-  <rect x="63" y="52" width="9"  height="3.5" rx="1.75" fill="#2563eb" opacity="0.4"/>
-  <rect x="83" y="52" width="7"  height="3.5" rx="1.75" fill="#2563eb" opacity="0.4"/>
-
-  <line x1="33" y1="61" x2="95" y2="61" stroke="#2563eb" stroke-width="1" opacity="0.2"/>
-
-  <!-- Row 2 (partially covered by magnifying glass — drawn but white circle will clip) -->
-  <rect x="38" y="66" width="16" height="3.5" rx="1.75" fill="#2563eb" opacity="0.7"/>
-  <rect x="63" y="66" width="7"  height="3.5" rx="1.75" fill="#2563eb" opacity="0.4"/>
-
-  <line x1="33" y1="75" x2="95" y2="75" stroke="#2563eb" stroke-width="1" opacity="0.2"/>
-
-  <!-- Row 3 -->
-  <rect x="38" y="79" width="12" height="3.5" rx="1.75" fill="#2563eb" opacity="0.7"/>
-
-  <!-- Magnifying glass — well inside table, bottom-right quadrant -->
-  <circle cx="79" cy="72" r="20" fill="#ffffff"/>
-  <circle cx="79" cy="72" r="13" fill="none" stroke="#2563eb" stroke-width="3"/>
-  <line x1="88" y1="81" x2="100" y2="93" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
+  <!-- Table outline -->
+  <rect x="1" y="1" width="10" height="10" rx="1" stroke="currentColor" stroke-width="1.2"/>
+  <!-- Header row -->
+  <line x1="1" y1="4" x2="11" y2="4" stroke="currentColor" stroke-width="1.2"/>
+  <!-- Column divider -->
+  <line x1="6" y1="4" x2="6" y2="11" stroke="currentColor" stroke-width="1"/>
+  <!-- Row divider -->
+  <line x1="1" y1="7.5" x2="11" y2="7.5" stroke="currentColor" stroke-width="0.8"/>
+  <!-- Magnifying glass -->
+  <circle cx="11.5" cy="11.5" r="3" stroke="currentColor" stroke-width="1.2"/>
+  <line x1="13.8" y1="13.8" x2="15.2" y2="15.2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
 </svg>

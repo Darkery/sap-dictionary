@@ -2,6 +2,33 @@ import * as vscode from 'vscode';
 import { DataManager } from './dataManager';
 import { FieldInfo, TableInfo } from './types';
 
+const KEYWORD_BLOCKLIST = new Set([
+  // SQL DML / DQL
+  'SELECT','FROM','WHERE','AND','OR','NOT','IN','IS','NULL','ORDER','BY',
+  'GROUP','HAVING','JOIN','LEFT','RIGHT','INNER','OUTER','FULL','ON','AS',
+  'DISTINCT','UNION','ALL','INSERT','INTO','UPDATE','SET','DELETE','WITH',
+  'CASE','WHEN','THEN','ELSE','END','LIKE','BETWEEN','EXISTS','TOP','LIMIT',
+  'OFFSET','OVER','PARTITION','WINDOW','VALUES','USING','NATURAL','CROSS',
+  'ASC','DESC','NULLS','FIRST','LAST','FETCH','NEXT','ROWS','ONLY',
+  // SQL DDL / DCL
+  'CREATE','TABLE','VIEW','DROP','ALTER','ADD','PRIMARY','KEY','FOREIGN',
+  'REFERENCES','INDEX','UNIQUE','DEFAULT','CONSTRAINT','CHECK','GRANT',
+  'REVOKE','COMMIT','ROLLBACK','BEGIN','TRUNCATE',
+  // SQL types (commonly used standalone)
+  'INTEGER','VARCHAR','NVARCHAR','CHAR','NCHAR','BIGINT','SMALLINT',
+  'DECIMAL','NUMERIC','FLOAT','REAL','DOUBLE','DATE','TIME','TIMESTAMP',
+  'BOOLEAN','BINARY','VARBINARY','TEXT','CLOB','BLOB',
+  // ABAP keywords
+  'IF','ELSE','ELSEIF','ENDIF','DO','ENDDO','LOOP','ENDLOOP','AT','EXIT',
+  'DATA','TYPE','LIKE','FIELD','PERFORM','FORM','ENDFORM','CALL','FUNCTION',
+  'ENDFUNCTION','CLASS','ENDCLASS','METHOD','ENDMETHOD','INTERFACE',
+  'ENDINTERFACE','REPORT','PROGRAM','INCLUDE','WRITE','MOVE','CLEAR',
+  'REFRESH','FREE','APPEND','READ','MODIFY','COLLECT','RETURN','RAISE',
+  'MESSAGE','AUTHORITY','CHECK','TABLES','PARAMETERS','SELECTION','SCREEN',
+  'MODULE','ENDMODULE','PROVIDE','ENDPROVIDE','START','INITIALIZATION',
+  'NEW','FINAL','ABSTRACT','STATIC','PUBLIC','PRIVATE','PROTECTED',
+  'IMPORTING','EXPORTING','CHANGING','RETURNING','EXCEPTIONS','RAISING',
+]);
 
 export function createHoverProvider(dataManager: DataManager, productUrl: string): vscode.HoverProvider {
   return {
@@ -13,6 +40,11 @@ export function createHoverProvider(dataManager: DataManager, productUrl: string
 
       const word = document.getText(wordRange).toUpperCase();
       if (word.length < 2) {
+        return null;
+      }
+
+      // Skip SQL and ABAP language keywords
+      if (KEYWORD_BLOCKLIST.has(word)) {
         return null;
       }
 

@@ -32,11 +32,49 @@ export class SearchViewProvider implements vscode.WebviewViewProvider {
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    padding: 6px 8px 8px;
+    padding: 8px;
     font-family: var(--vscode-font-family);
     font-size: var(--vscode-font-size);
     color: var(--vscode-foreground);
     background: transparent;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--vscode-sideBarSectionHeader-foreground, var(--vscode-foreground));
+    opacity: 0.7;
+    margin-bottom: 5px;
+  }
+  .import-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    width: 100%;
+    background: var(--vscode-button-secondaryBackground, var(--vscode-editor-background));
+    color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
+    border: 1px solid var(--vscode-button-border, var(--vscode-widget-border, transparent));
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 12px;
+    text-align: left;
+    line-height: 1.4;
+  }
+  .import-btn:hover {
+    background: var(--vscode-button-secondaryHoverBackground, var(--vscode-list-hoverBackground));
+  }
+  .import-hint {
+    font-size: 11px;
+    color: var(--vscode-descriptionForeground);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .divider {
+    height: 1px;
+    background: var(--vscode-widget-border, var(--vscode-editorWidget-border, rgba(127,127,127,0.2)));
+    margin: 10px 0;
   }
   .search-row {
     display: flex;
@@ -49,12 +87,12 @@ export class SearchViewProvider implements vscode.WebviewViewProvider {
   }
   .search-row:focus-within {
     border-color: var(--vscode-focusBorder);
-    outline: none;
   }
   .search-icon {
     color: var(--vscode-input-placeholderForeground);
     font-size: 14px;
     flex-shrink: 0;
+    user-select: none;
   }
   input {
     flex: 1;
@@ -68,34 +106,33 @@ export class SearchViewProvider implements vscode.WebviewViewProvider {
   input::placeholder {
     color: var(--vscode-input-placeholderForeground);
   }
-  .import-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 6px;
-    padding: 5px 8px;
-    width: 100%;
-    background: var(--vscode-button-secondaryBackground, var(--vscode-editor-background));
-    color: var(--vscode-button-secondaryForeground, var(--vscode-foreground));
-    border: 1px solid var(--vscode-button-border, transparent);
-    border-radius: 2px;
-    cursor: pointer;
-    font-size: 12px;
-    text-align: left;
-  }
-  .import-btn:hover {
-    background: var(--vscode-button-secondaryHoverBackground, var(--vscode-list-hoverBackground));
+  .search-hint {
+    font-size: 11px;
+    color: var(--vscode-descriptionForeground);
+    margin-top: 4px;
+    line-height: 1.4;
   }
 </style>
 </head>
 <body>
+
+  <!-- Import section (top) -->
+  <div class="section-label">Your SAP System</div>
+  <button class="import-btn" id="import" title="Import a JSON export from your SAP system to see Z-tables and custom fields">
+    📁 Import system metadata (JSON)
+  </button>
+  <div class="import-hint">Add your Z-tables and custom field descriptions</div>
+
+  <div class="divider"></div>
+
+  <!-- Search section (bottom, adjacent to the tree below) -->
+  <div class="section-label">Search</div>
   <div class="search-row">
     <span class="search-icon">⌕</span>
-    <input id="search" type="text" placeholder="Search tables &amp; fields…" autocomplete="off" spellcheck="false" />
+    <input id="search" type="text" placeholder="Table name, field, description…" autocomplete="off" spellcheck="false" />
   </div>
-  <button class="import-btn" id="import">
-    <span>📁</span> Import system data…
-  </button>
+  <div class="search-hint">Filters the table list below · e.g. "MARA", "material"</div>
+
 <script>
   const vscode = acquireVsCodeApi();
   document.getElementById('search').addEventListener('input', function() {

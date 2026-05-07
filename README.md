@@ -122,8 +122,8 @@ Convert the query output to the JSON format above and import via the command pal
 
 If your Z-tables show "Not found in SAP Dictionary" or "No description available", import your system's metadata (see above).
 
-Need AI-powered descriptions and automatic sync from your SAP system? → **[Learn more](https://YOUR_LANDING_PAGE_URL)**
+Need AI-powered descriptions and automatic sync from your SAP system? → **[Learn more](https://github.com/darkery)**
 
 ---
 
-*Powered by [YOUR_PRODUCT_NAME](https://YOUR_LANDING_PAGE_URL)*
+*Powered by [Rosetta](https://github.com/darkery)*

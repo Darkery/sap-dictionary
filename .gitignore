@@ -3,3 +3,4 @@ out/
 *.vsix
 publish/.token
 .DS_Store
+TODO.md

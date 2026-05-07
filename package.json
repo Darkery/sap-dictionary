@@ -29,6 +29,12 @@
     "views": {
       "sap-dictionary": [
         {
+          "id": "sapDictionarySearch",
+          "name": "",
+          "type": "webview",
+          "contextualTitle": "SAP Dictionary"
+        },
+        {
           "id": "sapDictionaryTree",
           "name": "Tables & Fields",
           "contextualTitle": "SAP Dictionary"
@@ -53,20 +59,7 @@
         "title": "SAP Dictionary: Search Tables & Fields"
       }
     ],
-    "menus": {
-      "view/title": [
-        {
-          "command": "sapDictionary.importData",
-          "when": "view == sapDictionaryTree",
-          "group": "navigation"
-        },
-        {
-          "command": "sapDictionary.search",
-          "when": "view == sapDictionaryTree",
-          "group": "navigation"
-        }
-      ]
-    },
+    "menus": {},
     "configuration": {
       "title": "SAP Dictionary",
       "properties": {

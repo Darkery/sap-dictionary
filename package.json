@@ -3,7 +3,7 @@
   "displayName": "SAP Data Dictionary",
   "description": "Instant SAP table and field descriptions in VS Code — no SAP connection needed",
   "version": "0.1.0",
-  "publisher": "YOUR_PUBLISHER_ID",
+  "publisher": "darkery",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -12,7 +12,7 @@
   "icon": "resources/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_GITHUB/sap-dictionary"
+    "url": "https://github.com/darkery/sap-dictionary"
   },
   "activationEvents": ["onStartupFinished"],
   "main": "./out/extension.js",
@@ -65,7 +65,7 @@
       "properties": {
         "sapDictionary.productUrl": {
           "type": "string",
-          "default": "https://YOUR_LANDING_PAGE_URL",
+          "default": "https://github.com/darkery",
           "description": "Landing page URL for lead gen CTA"
         }
       }

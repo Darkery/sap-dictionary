@@ -8,3 +8,5 @@ esbuild.js
 .eslintrc.json
 **/*.ts
 !out/**
+publish/.token
+publish/publish.sh

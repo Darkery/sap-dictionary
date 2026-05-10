@@ -12,7 +12,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   await dm.initialize();
 
   const config = vscode.workspace.getConfiguration('sapDictionary');
-  const productUrl: string = config.get('productUrl') ?? 'https://YOUR_LANDING_PAGE_URL';
+  const productUrl: string = config.get('productUrl') ?? 'https://rosetta-landing.pages.dev';
 
   // Sidebar: search webview (top) + tree (bottom)
   const searchProvider = new SearchViewProvider();

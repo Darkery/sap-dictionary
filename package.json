@@ -65,7 +65,7 @@
       "properties": {
         "sapDictionary.productUrl": {
           "type": "string",
-          "default": "https://github.com/darkery",
+          "default": "https://rosetta-landing.pages.dev",
           "description": "Landing page URL for lead gen CTA"
         }
       }

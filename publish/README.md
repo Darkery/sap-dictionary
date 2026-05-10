@@ -2,14 +2,8 @@
 
 ## Files
 
-- `.token` — Azure DevOps PAT. **Listed in .gitignore — never committed.**
+- `.token` — Azure DevOps PAT. **Listed in .gitignore and .vscodeignore — never committed or packaged.**
 - `publish.sh` — publish script
-
-## Pre-publish checklist
-
-1. Update `sapDictionary.productUrl` in `package.json` to the real landing page URL
-2. Update `version` in `package.json`
-3. Update `CHANGELOG.md`
 
 ## Publish
 
@@ -17,10 +11,10 @@
 # Publish with version already set in package.json
 bash publish/publish.sh
 
-# Auto-bump patch version and publish (0.1.0 → 0.1.1)
+# Auto-bump patch version and publish (0.1.1 → 0.1.2)
 bash publish/publish.sh patch
 
-# Auto-bump minor version and publish (0.1.0 → 0.2.0)
+# Auto-bump minor version and publish (0.1.1 → 0.2.0)
 bash publish/publish.sh minor
 ```
 

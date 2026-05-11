@@ -10,6 +10,8 @@ Instant SAP table and field descriptions in VS Code — hover over any SAP ident
 
 **Hover Tooltips** — hover over SAP table or field names in `.abap`, `.sql`, `.hdbview`, `.hdbtable`, `.hdbprocedure`, `.hdbcalculationview` files.
 
+![Hover tooltip demo](resources/demo_hover_tooltip.gif)
+
 ```
 MATNR · MARA
 Material Number
@@ -21,6 +23,8 @@ Data Element: `MATNR`
 **Sidebar Panel** — browse and search all 674 tables and 16,700+ fields. Fuzzy search matches table names, field names, and descriptions (`mar` matches MARA, MARC, MARD…). Searching by field name surfaces matching fields directly in the results.
 
 **Import Your System's Metadata** — import one or more JSON exports from your SAP system to add Z-tables and team-specific descriptions. Imported files are listed in the sidebar individually and can be removed one at a time. Your data takes priority over the bundled data.
+
+![Import metadata demo](resources/demo_import.gif)
 
 ---
 

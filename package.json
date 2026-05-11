@@ -2,7 +2,7 @@
   "name": "sap-dictionary",
   "displayName": "SAP Data Dictionary",
   "description": "Instant SAP table and field descriptions in VS Code — no SAP connection needed",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "darkery",
   "engines": {
     "vscode": "^1.85.0"

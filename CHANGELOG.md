@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5] - 2026-05-12
+
+### Fixed
+- GIFs broken on VS Code Marketplace — switched to absolute GitHub raw URLs
+
+---
+
 ## [0.1.4] - 2026-05-12
 
 ### Changed

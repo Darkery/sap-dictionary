@@ -59,7 +59,6 @@ if [ -n "$BUMP" ]; then
   if [ -n "$SUMMARY" ]; then
     TODAY=$(date +%Y-%m-%d)
     ENTRY="## [$NEW_VERSION] - $TODAY\n\n### Changed\n- $SUMMARY\n\n---\n"
-    # Prepend after the first line (# Changelog header)
     TMP=$(mktemp)
     awk -v entry="$ENTRY" 'NR==1{print; print ""; printf entry; next}1' CHANGELOG.md > "$TMP"
     mv "$TMP" CHANGELOG.md
@@ -72,7 +71,7 @@ echo ""
 echo "Running tests..."
 npm test
 
-# ── Build & publish ───────────────────────────────────────────────────────────
+# ── Build & publish to Marketplace ───────────────────────────────────────────
 
 echo ""
 echo "Building production bundle..."
@@ -82,12 +81,20 @@ echo ""
 echo "Publishing to VS Code Marketplace..."
 npx @vscode/vsce publish --pat "$TOKEN"
 
-# ── Git commit & tag ──────────────────────────────────────────────────────────
+# ── Package VSIX ─────────────────────────────────────────────────────────────
+
+FINAL_VERSION=$(node -p "require('./package.json').version")
+VSIX="sap-dictionary-${FINAL_VERSION}.vsix"
+
+echo ""
+echo "Packaging VSIX..."
+npx @vscode/vsce package --out "$VSIX"
+
+# ── Git commit, tag & push ────────────────────────────────────────────────────
 
 if [ -n "$BUMP" ]; then
-  FINAL_VERSION=$(node -p "require('./package.json').version")
   echo ""
-  read -rp "Commit and tag v$FINAL_VERSION? [Y/n]: " DOTAG
+  read -rp "Commit, tag and push v$FINAL_VERSION? [Y/n]: " DOTAG
   DOTAG="${DOTAG:-Y}"
   if [[ "$DOTAG" =~ ^[Yy]$ ]]; then
     git add package.json CHANGELOG.md
@@ -96,6 +103,27 @@ if [ -n "$BUMP" ]; then
     git push && git push --tags
     echo "Tagged and pushed v$FINAL_VERSION"
   fi
+fi
+
+# ── GitHub Release ────────────────────────────────────────────────────────────
+
+if command -v gh &>/dev/null; then
+  echo ""
+  read -rp "Create GitHub release for v$FINAL_VERSION? [Y/n]: " DORELEASE
+  DORELEASE="${DORELEASE:-Y}"
+  if [[ "$DORELEASE" =~ ^[Yy]$ ]]; then
+    # Extract this version's section from CHANGELOG.md
+    NOTES=$(awk "/^## \[$FINAL_VERSION\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md | sed '/^---$/d' | sed '/^$/N;/^\n$/d')
+
+    gh release create "v$FINAL_VERSION" "$VSIX" \
+      --title "v$FINAL_VERSION" \
+      --notes "$NOTES"
+
+    echo "GitHub release created: v$FINAL_VERSION"
+  fi
+else
+  echo ""
+  echo "Note: 'gh' not found — skipping GitHub release. Install with: brew install gh"
 fi
 
 echo ""

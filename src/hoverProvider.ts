@@ -30,6 +30,29 @@ const KEYWORD_BLOCKLIST = new Set([
   'IMPORTING','EXPORTING','CHANGING','RETURNING','EXCEPTIONS','RAISING',
 ]);
 
+const aliasMapCache = new Map<string, { version: number; map: Map<string, string> }>();
+
+function buildAliasMap(document: vscode.TextDocument): Map<string, string> {
+  const key = document.uri.toString();
+  const cached = aliasMapCache.get(key);
+  if (cached && cached.version === document.version) {
+    return cached.map;
+  }
+  const map = new Map<string, string>();
+  const text = document.getText();
+  const re = /(?:FROM|JOIN)\s+([A-Z][A-Z0-9_]+)\s+(?:AS\s+)?([A-Za-z][A-Za-z0-9_]*)/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    const table = m[1].toUpperCase();
+    const alias = m[2].toLowerCase();
+    if (alias !== table.toLowerCase()) {
+      map.set(alias, table);
+    }
+  }
+  aliasMapCache.set(key, { version: document.version, map });
+  return map;
+}
+
 export function createHoverProvider(dataManager: DataManager, productUrl: string): vscode.HoverProvider {
   return {
     provideHover(document: vscode.TextDocument, position: vscode.Position): vscode.Hover | null {
@@ -38,7 +61,8 @@ export function createHoverProvider(dataManager: DataManager, productUrl: string
         return null;
       }
 
-      const word = document.getText(wordRange).toUpperCase();
+      const rawWord = document.getText(wordRange);
+      const word = rawWord.toUpperCase();
       if (word.length < 2) {
         return null;
       }
@@ -48,17 +72,20 @@ export function createHoverProvider(dataManager: DataManager, productUrl: string
         return null;
       }
 
-      // Detect "TABLE~FIELD" or "TABLE-FIELD" context (ABAP field access)
+      // Detect "TABLE~FIELD", "TABLE-FIELD" (ABAP) or "alias.FIELD" / "TABLE.FIELD" (SQL)
       const lineText = document.lineAt(position.line).text;
       const wordStart = wordRange.start.character;
       const precedingText = lineText.substring(0, wordStart);
-      const tableFieldMatch = precedingText.match(/([A-Z][A-Z0-9_]{1,29})[~\-]$/);
+      const tableFieldMatch = precedingText.match(/([A-Za-z][A-Za-z0-9_]{0,29})[~\-\.]$/);
 
       let tableName: string;
       let fieldName: string | undefined;
 
       if (tableFieldMatch) {
-        tableName = tableFieldMatch[1];
+        const qualifier = tableFieldMatch[1];
+        // Resolve lowercase alias → real table name using FROM/JOIN clauses
+        const aliasMap = buildAliasMap(document);
+        tableName = aliasMap.get(qualifier.toLowerCase()) ?? qualifier.toUpperCase();
         fieldName = word;
       } else {
         tableName = word;

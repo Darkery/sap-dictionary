@@ -180,3 +180,7 @@ Need AI-powered descriptions and automatic sync from your SAP system? → **[Lea
 ---
 
 *Powered by [Rosetta](https://rosetta-landing.pages.dev)*
+
+---
+
+*SAP, ABAP, and SAP HANA are trademarks of SAP SE. This extension is not affiliated with or endorsed by SAP SE.*

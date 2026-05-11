@@ -4,3 +4,4 @@ out/
 publish/.token
 .DS_Store
 TODO.md
+scripts/

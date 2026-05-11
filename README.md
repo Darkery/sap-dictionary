@@ -18,9 +18,9 @@ Type: `CHAR`  Length: 18
 Data Element: `MATNR`
 ```
 
-**Sidebar Panel** — browse and search all 674 tables and 16,700+ fields with fuzzy search (`mar` matches MARA, MARC, MARD…).
+**Sidebar Panel** — browse and search all 674 tables and 16,700+ fields. Fuzzy search matches table names, field names, and descriptions (`mar` matches MARA, MARC, MARD…). Searching by field name surfaces matching fields directly in the results.
 
-**Import Your System's Metadata** — upload a JSON export from your own SAP system to see custom Z-tables and team-specific descriptions. Your data takes priority over the bundled data.
+**Import Your System's Metadata** — import one or more JSON exports from your SAP system to add Z-tables and team-specific descriptions. Imported files are listed in the sidebar individually and can be removed one at a time. Your data takes priority over the bundled data.
 
 ---
 
@@ -48,22 +48,28 @@ Data Element: `MATNR`
 
 ## Import Your System's Metadata
 
-To see descriptions for Z-tables and custom fields, export your SAP system's data dictionary as JSON and import it via **SAP Dictionary: Import System Data (JSON)**.
+Click **Import System Metadata** in the sidebar, or run **SAP Dictionary: Import System Data (JSON)** from the command palette, and select a JSON file.
+
+You can import multiple files. Each appears as a separate entry in the sidebar — remove any one without affecting the others.
 
 ### JSON Format
 
+The top-level structure must have a `tables` object. Everything else is optional.
+
 ```json
 {
-  "exported_at": "2026-05-01",
+  "exported_at": "2026-05-11T00:00:00Z",
   "system": "PRD",
   "tables": {
-    "ZCUSTOM_TABLE": {
-      "description": "My Custom Business Object",
+    "ZTABLE_NAME": {
+      "description": "Human-readable table description",
       "fields": {
-        "ZFIELD1": {
-          "description": "Custom Field One",
+        "FIELD_NAME": {
+          "description": "Human-readable field description",
           "type": "CHAR",
-          "length": 20
+          "length": 20,
+          "is_key": true,
+          "data_element": "ZFIELD_NAME_DE"
         }
       }
     }
@@ -71,7 +77,50 @@ To see descriptions for Z-tables and custom fields, export your SAP system's dat
 }
 ```
 
-`description: ""` — empty string means no description; the tooltip will show a "Get AI-powered descriptions" prompt instead.
+#### Top-level fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `tables` | **yes** | Object mapping table names to table definitions |
+| `exported_at` | no | ISO timestamp — informational only |
+| `system` | no | System ID — informational only |
+
+#### Table definition
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `fields` | **yes** | Object mapping field names to field definitions |
+| `description` | no | Table description shown in hover tooltip and sidebar |
+
+#### Field definition
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `description` | no | Field description. Empty string shows "No description available" with a CTA to get AI descriptions |
+| `type` | no | ABAP/HANA data type (`CHAR`, `NUMC`, `DATS`, `INT4`, `CURR`, etc.) |
+| `length` | no | Field length in characters |
+| `is_key` | no | `true` if this field is part of the primary key |
+| `data_element` | no | ABAP data element name |
+
+Table and field names are case-insensitive on import (stored and matched in uppercase).
+
+If you import a file that overlaps with a previously imported file, the later import wins on a per-field basis.
+
+### Minimal valid example
+
+```json
+{
+  "tables": {
+    "ZORDERS": {
+      "description": "Custom Sales Orders",
+      "fields": {
+        "ORDER_ID": { "description": "Order Number" },
+        "STATUS":   { "description": "Order Status" }
+      }
+    }
+  }
+}
+```
 
 ### Export Methods
 
@@ -92,12 +141,12 @@ SELECT d~tabname, t~ddtext AS table_desc,
   LEFT JOIN dd02t AS t ON t~tabname = d~tabname AND t~ddlanguage = 'E'
   LEFT JOIN dd03t AS f ON f~tabname = d~tabname AND f~fieldname = d~fieldname AND f~ddlanguage = 'E'
   LEFT JOIN dd04t AS e ON e~rollname = d~rollname AND e~ddlanguage = 'E'
-  WHERE d~tabname IN ('ZTABLE1', 'ZTABLE2')
+  WHERE d~tabname LIKE 'Z%'
     AND d~fieldname NOT LIKE '.%'
   ORDER BY d~tabname, d~position.
 ```
 
-Convert the query output to the JSON format above and import via the command palette.
+Convert the query output to the JSON format above and import via the sidebar button.
 
 ---
 
@@ -105,9 +154,9 @@ Convert the query output to the JSON format above and import via the command pal
 
 | Command | Description |
 |---------|-------------|
-| `SAP Dictionary: Import System Data (JSON)` | Import a JSON metadata export from your SAP system |
-| `SAP Dictionary: Clear Imported Data` | Remove previously imported custom data |
-| `SAP Dictionary: Search Tables & Fields` | Fuzzy search in the sidebar |
+| `SAP Dictionary: Import System Data (JSON)` | Import a JSON metadata file |
+| `SAP Dictionary: Clear Imported Data` | Remove all imported metadata |
+| `SAP Dictionary: Search Tables & Fields` | Fuzzy search via command palette |
 | `SAP Dictionary: Open Product Page` | Learn about AI-powered descriptions |
 
 ---

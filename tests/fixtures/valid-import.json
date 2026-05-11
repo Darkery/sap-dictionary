@@ -1,0 +1,26 @@
+{
+  "exported_at": "2026-01-01T00:00:00Z",
+  "system": "DEV",
+  "tables": {
+    "ZTABLE1": {
+      "description": "Custom Table 1",
+      "fields": {
+        "MANDT": { "description": "Client", "type": "CLNT", "length": 3 },
+        "ZFIELD1": { "description": "Custom Field 1", "type": "CHAR", "length": 20 }
+      }
+    },
+    "ZTABLE2": {
+      "description": "Custom Table 2",
+      "fields": {
+        "MANDT": { "description": "Client", "type": "CLNT", "length": 3 },
+        "ZFIELD2": { "description": "Custom Field 2", "type": "NUMC", "length": 10 }
+      }
+    },
+    "ZTABLE3": {
+      "description": "Custom Table 3",
+      "fields": {
+        "ZFIELD3": { "description": "Custom Field 3", "type": "DATS", "length": 8 }
+      }
+    }
+  }
+}

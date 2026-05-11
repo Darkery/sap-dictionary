@@ -22,6 +22,18 @@ This runs `npm run build` automatically via the pre-launch task.
 
 To test hover tooltips, open any `.sql`, `.abap`, or `.hdb*` file and hover over a table/field name (e.g. `MARA`, `MATNR`).
 
+## Testing
+
+```bash
+npm test             # run all tests once
+npm run test:watch   # watch mode
+npm run test:coverage
+```
+
+Tests live in `tests/` and use [Vitest](https://vitest.dev). The `vscode` module is aliased to a lightweight mock so tests run in plain Node without an extension host.
+
+Sample import fixtures for manual and automated testing are in `tests/fixtures/`.
+
 ## Data Pipeline
 
 The bundled data at `data/sap-standard.json` is generated from two scrapers:
@@ -39,58 +51,85 @@ python3 scripts/merge_data.py
 
 Raw scraper output is saved to `scripts/abap_tables.json` and `scripts/hana_views.json`.
 
-## Packaging
+## Import JSON Format
 
-Requires `@vscode/vsce` (installed on demand via npx):
+Users can import custom Z-table metadata. The expected format:
 
-```bash
-npx @vscode/vsce package
+```json
+{
+  "exported_at": "2026-05-11T00:00:00Z",
+  "system": "PRD",
+  "tables": {
+    "ZTABLE1": {
+      "description": "My Custom Table",
+      "fields": {
+        "MANDT":   { "description": "Client",       "type": "CLNT", "length": 3,  "is_key": true },
+        "ZFIELD1": { "description": "Custom Field",  "type": "CHAR", "length": 50 }
+      }
+    }
+  }
+}
 ```
 
-This produces `sap-dictionary-<version>.vsix` in the project root.
-The `vscode:prepublish` script runs automatically and builds a minified production bundle.
+Required: `tables` (object), each table must have a `fields` object.  
+Optional per field: `type`, `length`, `is_key`, `data_element`.
+
+Multiple files can be imported; later imports win on field conflicts.  
+User data is stored in VS Code `globalState` under `sapDictionary.importEntries`.
+
+## Packaging
+
+```bash
+npx vsce package
+```
+
+Produces `sap-dictionary-<version>.vsix` in the project root.  
+`.token` and `publish/publish.sh` are excluded via `.vscodeignore`.
 
 To install the `.vsix` locally for testing:
 
 ```bash
-code --install-extension sap-dictionary-0.1.0.vsix
+code --install-extension sap-dictionary-0.1.1.vsix
 ```
 
 ## Publishing
 
-> Update `sapDictionary.productUrl` in `package.json` to the real landing page before publishing.
-
 ```bash
-npx @vscode/vsce publish
+bash publish/publish.sh
 ```
 
-You will be prompted for a Personal Access Token (PAT) from
-[dev.azure.com](https://dev.azure.com) with **Marketplace (Publish)** scope.
-
-To bump the version before publishing:
+The script builds a production bundle and publishes using the PAT stored in `publish/.token`.  
+To bump the version, update `"version"` in `package.json` first (same version cannot be re-published).
 
 ```bash
-npx @vscode/vsce publish patch   # 0.1.0 → 0.1.1
-npx @vscode/vsce publish minor   # 0.1.0 → 0.2.0
-npx @vscode/vsce publish major   # 0.1.0 → 1.0.0
+npx vsce publish patch   # 0.1.1 → 0.1.2
+npx vsce publish minor   # 0.1.1 → 0.2.0
 ```
 
 ## Project Structure
 
 ```
 src/
-  extension.ts        # entry point, wires everything together
-  dataManager.ts      # data loading, merge, fuzzy search
-  hoverProvider.ts    # hover tooltip logic
-  sidebarProvider.ts  # tree view (tables & fields)
-  searchViewProvider.ts  # webview (search box + import button)
-  types.ts            # shared TypeScript interfaces
+  extension.ts          # entry point, wires everything together
+  dataManager.ts        # data loading, multi-import merge, fuzzy search
+  hoverProvider.ts      # hover tooltip logic
+  sidebarProvider.ts    # tree view (tables & fields, field-level search results)
+  searchViewProvider.ts # sidebar webview (import button, imported files list, search)
+  types.ts              # shared TypeScript interfaces
 data/
-  sap-standard.json   # bundled SAP table/field data (674 tables, 16752 fields)
+  sap-standard.json     # bundled SAP data (674 tables, 16 700+ fields)
+tests/
+  __mocks__/vscode.ts   # lightweight vscode module mock
+  helpers/mockContext.ts
+  fixtures/             # sample import JSON files for testing
+  dataManager.test.ts
 scripts/
-  scrape_sapdatasheet.py   # ABAP table scraper
-  scrape_hana_views.py     # HANA view scraper
-  merge_data.py            # merges scraper output into sap-standard.json
+  scrape_sapdatasheet.py
+  scrape_hana_views.py
+  merge_data.py
+publish/
+  publish.sh            # build + publish script
+  .token                # Azure PAT (gitignored + vscodeignored)
 resources/
-  icon.png / icon.svg      # extension icons
+  icon.png / icon.svg
 ```

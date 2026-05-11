@@ -10,3 +10,5 @@ esbuild.js
 !out/**
 publish/.token
 publish/publish.sh
+tests/**
+vitest.config.ts

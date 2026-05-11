@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.3] - 2026-05-12
+
+### Added
+- **SQL alias resolution** — hover over `o.VBELN` now resolves alias `o` to `VBAK` by scanning `FROM/JOIN` clauses; works with both `AS alias` and bare alias syntax
+- **Demo GIFs** in README — hover tooltip walkthrough and import workflow
+
+### Changed
+- `publish.sh` now creates a GitHub release automatically, attaching the VSIX and pulling release notes from CHANGELOG
+- Alias map cached per document version — no repeated full-text scans on every hover
+
+### Fixed
+- SQL dot notation (`TABLE.FIELD`) not recognized as field access — only `~` and `-` (ABAP) were supported before
+
+---
+
 ## [0.1.2] - 2026-05-11
 
 ### Added

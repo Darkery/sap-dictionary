@@ -32,3 +32,20 @@ export interface SearchItem {
   fieldName?: string;
   fieldDescription?: string;
 }
+
+export interface ImportEntry {
+  id: string;
+  filename: string;
+  importedAt: string;
+  tableCount: number;
+  fieldCount: number;
+  tables: Record<string, TableInfo>;
+}
+
+export interface ImportEntryMeta {
+  id: string;
+  filename: string;
+  importedAt: string;
+  tableCount: number;
+  fieldCount: number;
+}

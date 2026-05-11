@@ -14,8 +14,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   const config = vscode.workspace.getConfiguration('sapDictionary');
   const productUrl: string = config.get('productUrl') ?? 'https://rosetta-landing.pages.dev';
 
-  // Sidebar: search webview (top) + tree (bottom)
-  const searchProvider = new SearchViewProvider();
+  const searchProvider = new SearchViewProvider(() => dm.getImportEntries());
   const sidebarProvider = new SidebarProvider(dm);
 
   context.subscriptions.push(
@@ -23,14 +22,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     vscode.window.registerTreeDataProvider('sapDictionaryTree', sidebarProvider),
   );
 
-  // Wire search input → tree filter
   context.subscriptions.push(
-    searchProvider.onSearch(query => sidebarProvider.setSearchQuery(query))
-  );
-
-  // Wire import button in webview → import command
-  context.subscriptions.push(
-    searchProvider.onImport(() => vscode.commands.executeCommand('sapDictionary.importData'))
+    searchProvider.onSearch(query => sidebarProvider.setSearchQuery(query)),
+    searchProvider.onImport(() => vscode.commands.executeCommand('sapDictionary.importData')),
+    searchProvider.onClear(() => vscode.commands.executeCommand('sapDictionary.clearUserData')),
+    searchProvider.onDeleteImport(id => vscode.commands.executeCommand('sapDictionary.deleteImport', id)),
   );
 
   registerHoverProvider(context, dm, productUrl);
@@ -45,6 +41,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     try {
       const { tableCount, fieldCount } = await dm.importUserData(uris[0].fsPath);
       sidebarProvider.refresh();
+      searchProvider.updateImportEntries(dm.getImportEntries());
       vscode.window.showInformationMessage(
         `SAP Dictionary: Imported ${tableCount} tables, ${fieldCount} fields.`
       );
@@ -58,6 +55,20 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   context.subscriptions.push(
     vscode.commands.registerCommand('sapDictionary.importData', doImport),
 
+    vscode.commands.registerCommand('sapDictionary.deleteImport', async (id: string) => {
+      const entry = dm.getImportEntries().find(e => e.id === id);
+      const label = entry?.filename ?? 'this import';
+      const confirm = await vscode.window.showWarningMessage(
+        `Remove "${label}" from imported metadata?`,
+        { modal: true },
+        'Remove'
+      );
+      if (confirm !== 'Remove') { return; }
+      await dm.deleteImportEntry(id);
+      sidebarProvider.refresh();
+      searchProvider.updateImportEntries(dm.getImportEntries());
+    }),
+
     vscode.commands.registerCommand('sapDictionary.clearUserData', async () => {
       const confirm = await vscode.window.showWarningMessage(
         'Clear all imported SAP metadata?',
@@ -67,6 +78,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       if (confirm === 'Clear') {
         await dm.clearUserData();
         sidebarProvider.refresh();
+        searchProvider.updateImportEntries([]);
         vscode.window.showInformationMessage('SAP Dictionary: Imported data cleared.');
       }
     }),
@@ -75,7 +87,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       vscode.env.openExternal(vscode.Uri.parse(productUrl));
     }),
 
-    // Keep command palette search as fallback
     vscode.commands.registerCommand('sapDictionary.search', async () => {
       const query = await vscode.window.showInputBox({
         prompt: 'Search SAP tables and fields',

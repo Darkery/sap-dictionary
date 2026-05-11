@@ -1,0 +1,24 @@
+{
+  "exported_at": "2026-01-02T00:00:00Z",
+  "tables": {
+    "ZTABLE1": {
+      "description": "Custom Table 1 (Updated)",
+      "fields": {
+        "MANDT": { "description": "Client Updated", "type": "CLNT", "length": 3 },
+        "ZNEWFIELD": { "description": "New Field from Second Import", "type": "CHAR", "length": 50 }
+      }
+    },
+    "ZTABLE4": {
+      "description": "Custom Table 4",
+      "fields": {
+        "ZFIELD4": { "description": "Custom Field 4", "type": "CHAR", "length": 5 }
+      }
+    },
+    "ZTABLE5": {
+      "description": "Custom Table 5",
+      "fields": {
+        "ZFIELD5": { "description": "Custom Field 5", "type": "INT4", "length": 10 }
+      }
+    }
+  }
+}

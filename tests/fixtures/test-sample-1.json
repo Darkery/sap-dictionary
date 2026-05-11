@@ -1,0 +1,40 @@
+{
+  "exported_at": "2026-05-11T00:00:00Z",
+  "system": "DEV",
+  "tables": {
+    "ZSALES_ORDER": {
+      "description": "Custom Sales Order Header",
+      "fields": {
+        "MANDT": { "description": "Client", "type": "CLNT", "length": 3, "is_key": true },
+        "ZORDER_ID": { "description": "Custom Order ID", "type": "CHAR", "length": 20, "is_key": true },
+        "CUSTOMER_NO": { "description": "Customer Number", "type": "CHAR", "length": 10 },
+        "ORDER_DATE": { "description": "Order Creation Date", "type": "DATS", "length": 8 },
+        "TOTAL_AMOUNT": { "description": "Total Order Amount", "type": "CURR", "length": 15 },
+        "STATUS": { "description": "Order Status (O=Open, C=Closed, X=Cancelled)", "type": "CHAR", "length": 1 }
+      }
+    },
+    "ZSALES_ITEM": {
+      "description": "Custom Sales Order Line Items",
+      "fields": {
+        "MANDT": { "description": "Client", "type": "CLNT", "length": 3, "is_key": true },
+        "ZORDER_ID": { "description": "Custom Order ID", "type": "CHAR", "length": 20, "is_key": true },
+        "ITEM_NO": { "description": "Line Item Number", "type": "NUMC", "length": 6, "is_key": true },
+        "MATERIAL": { "description": "Material Number", "type": "CHAR", "length": 18 },
+        "QUANTITY": { "description": "Order Quantity", "type": "QUAN", "length": 13 },
+        "UNIT": { "description": "Unit of Measure", "type": "UNIT", "length": 3 },
+        "NET_PRICE": { "description": "Net Price per Unit", "type": "CURR", "length": 12 }
+      }
+    },
+    "ZCUSTOMER_EXT": {
+      "description": "Customer Extension Attributes",
+      "fields": {
+        "MANDT": { "description": "Client", "type": "CLNT", "length": 3, "is_key": true },
+        "KUNNR": { "description": "Customer Account Number", "type": "CHAR", "length": 10, "is_key": true },
+        "CREDIT_TIER": { "description": "Credit Risk Tier (A/B/C)", "type": "CHAR", "length": 1 },
+        "LAST_REVIEW": { "description": "Last Credit Review Date", "type": "DATS", "length": 8 },
+        "ACCOUNT_MGR": { "description": "Account Manager Employee ID", "type": "NUMC", "length": 8 },
+        "NOTES": { "description": "Internal Account Notes", "type": "CHAR", "length": 255 }
+      }
+    }
+  }
+}

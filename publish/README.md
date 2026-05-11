@@ -8,15 +8,15 @@
 ## Publish
 
 ```bash
-# Publish with version already set in package.json
 bash publish/publish.sh
-
-# Auto-bump patch version and publish (0.1.1 → 0.1.2)
-bash publish/publish.sh patch
-
-# Auto-bump minor version and publish (0.1.1 → 0.2.0)
-bash publish/publish.sh minor
 ```
+
+The script will:
+1. Show the current version and prompt for a bump (patch / minor / major / keep)
+2. Update `package.json` and optionally add a `CHANGELOG.md` entry
+3. Run `npm test`
+4. Build a production bundle and publish to Marketplace
+5. Offer to `git commit`, tag, and push
 
 ## Updating the token
 

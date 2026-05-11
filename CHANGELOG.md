@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4] - 2026-05-12
+
+### Changed
+- Exclude `tests/` and `vitest.config.ts` from VSIX package — reduces install size
+
+---
+
 ## [0.1.3] - 2026-05-12
 
 ### Added

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.6] - 2026-05-14
+
+### Fixed
+- Imported table and field names now normalized to uppercase on import — fixes lookup failure for CDS entity names like `com.sap.catalog::SystemArtifact`
+- Hover alias resolution now supports quoted CDS names (`FROM "com.sap::Entity" AS alias`), schema-qualified names (`"SCHEMA"."table"`), and underscore-prefixed aliases (`_carr`, `_flsch`)
+
+---
+
 ## [0.1.5] - 2026-05-12
 
 ### Fixed

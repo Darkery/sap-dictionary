@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 import Fuse from 'fuse.js';
-import { SapDataFile, TableInfo, LookupResult, SearchItem, ImportEntry, ImportEntryMeta } from './types';
+import { SapDataFile, TableInfo, FieldInfo, LookupResult, SearchItem, ImportEntry, ImportEntryMeta } from './types';
 
 const IMPORTS_KEY = 'sapDictionary.importEntries';
 const LEGACY_KEY = 'sapDictionary.userData';
@@ -144,13 +144,24 @@ export class DataManager {
     }
     const tableCount = Object.keys(parsed.tables).length;
     const fieldCount = Object.values(parsed.tables).reduce((s, t) => s + Object.keys(t.fields).length, 0);
+
+    // Normalize table and field names to uppercase so lookup (which always uppercases) matches
+    const normalizedTables: Record<string, TableInfo> = {};
+    for (const [tableName, tableInfo] of Object.entries(parsed.tables)) {
+      const normalizedFields: Record<string, FieldInfo> = {};
+      for (const [fieldName, fieldInfo] of Object.entries(tableInfo.fields)) {
+        normalizedFields[fieldName.toUpperCase()] = fieldInfo;
+      }
+      normalizedTables[tableName.toUpperCase()] = { ...tableInfo, fields: normalizedFields };
+    }
+
     const entry: ImportEntry = {
       id: crypto.randomUUID(),
       filename: path.basename(filePath),
       importedAt: new Date().toISOString(),
       tableCount,
       fieldCount,
-      tables: parsed.tables,
+      tables: normalizedTables,
     };
     this.importEntries.push(entry);
     await this.context.globalState.update(IMPORTS_KEY, JSON.stringify(this.importEntries));

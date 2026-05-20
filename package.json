@@ -2,19 +2,39 @@
   "name": "sap-dictionary",
   "displayName": "SAP Data Dictionary",
   "description": "Instant SAP table and field descriptions in VS Code — no SAP connection needed",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "publisher": "darkery",
   "engines": {
     "vscode": "^1.85.0"
   },
-  "categories": ["Other"],
-  "keywords": ["SAP", "ABAP", "HANA", "dictionary", "data dictionary"],
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "SAP",
+    "ABAP",
+    "HANA",
+    "dictionary",
+    "data dictionary",
+    "S4HANA",
+    "SAP BW",
+    "table lookup",
+    "schema",
+    "SE11"
+  ],
   "icon": "resources/icon.png",
+  "homepage": "https://rosetta-landing.pages.dev",
+  "galleryBanner": {
+    "color": "#080e1a",
+    "theme": "dark"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/darkery/sap-dictionary"
   },
-  "activationEvents": ["onStartupFinished"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "viewsContainers": {

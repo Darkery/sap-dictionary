@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7] - 2026-05-20
+
+### Changed
+- Improve Marketplace metadata: keywords, gallery banner, homepage; strengthen Rosetta CTA in README
+
+---
+
 ## [0.1.6] - 2026-05-14
 
 ### Fixed

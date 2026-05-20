@@ -175,11 +175,13 @@ Convert the query output to the JSON format above and import via the sidebar but
 
 If your Z-tables show "Not found in SAP Dictionary" or "No description available", import your system's metadata (see above).
 
-Need AI-powered descriptions and automatic sync from your SAP system? → **[Learn more](https://rosetta-landing.pages.dev)**
+**Z-tables with no descriptions at all?** Every SAP project has them — the 50-200 custom tables that only one person on the team truly understands. If that knowledge lives in someone's head instead of your codebase, you have a bigger problem than a missing tooltip.
+
+→ **[Rosetta](https://rosetta-landing.pages.dev)** automatically builds a searchable knowledge base for your entire data stack — Z-tables, custom fields, business logic, dbt models. Early access is open.
 
 ---
 
-*Powered by [Rosetta](https://rosetta-landing.pages.dev)*
+*Built by [Rosetta](https://rosetta-landing.pages.dev) — Knowledge Indexing for Data Teams*
 
 ---
 
